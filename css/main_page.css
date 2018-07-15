@@ -79,6 +79,10 @@ body{
     margin: 0 0 0 0 !important;
 }
 
-.panel-scroll{
+.doc-panel-scroll{
+    padding: 15px 15px 15px 15px;
+}
+
+.sentence-panel-scroll{
     padding: 15px 15px 15px 15px;
 }
