@@ -14,23 +14,20 @@
                 <div class="panel-heading">Total Document</div>
                 <div class="panel-body">
                     <div class="doc-panel-scroll" style="overflow-y:auto; height:585px;">
-                        <!--<div class="sentence-1">-->
-                            <!--<p>sentence 1</p>-->
-                        <!--</div>-->
-                        <!--<div class="sentence-2">-->
-                            <!--<p>sentence 2</p>-->
-                        <!--</div>-->
-                        <!--<span id="sentence-1">sentence 1</span>-->
-                        <!--<span id="sentence-2">sentence 2</span>-->
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <nav aria-label="...">
-                        <ul class="pager">
-                            <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Pre</a></li>
-                            <li class="next"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
-                        </ul>
-                    </nav>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" onclick="docPre()" id="doc-previous"><span
+                                    aria-hidden="true">&larr;</span> Pre
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" onclick="docNext()" id="doc-next">Next <span
+                                    aria-hidden="true">&rarr;</span></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,19 +49,19 @@
                     <div class="type-radio">
                         <div class="radio">
                             <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option-1">
                                 Functionality
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option-2">
                                 Directive
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios0" value="option3">
+                                <input type="radio" name="optionsRadios" id="optionsRadios0" value="option-0">
                                 Others
                             </label>
                         </div>
@@ -72,7 +69,7 @@
                 </div>
                 <div class="panel-footer">
                     <div class="col-md-7 col-md-offset-4">
-                        <input class="btn btn-default" type="submit" value="Save">
+                        <input class="btn btn-default" type="submit" value="Save" onclick="saveTypeData()">
                     </div>
 
                 </div>
