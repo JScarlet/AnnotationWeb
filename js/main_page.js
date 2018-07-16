@@ -1,13 +1,15 @@
 let docText = [];
 let currentSentenceIndex = 0;
-let currentDocId = 0;
-let unfinishedDocs = [];
+let currentDocIndex = 0;
+let totalDocIds = [];
 let typeMap = new Map();
+let username = sessionStorage.getItem("username");
+console.log(username);
 $(document).ready(function () {
-    let doc_index = 1;
+    let doc_index = 0;
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/getUnfinishedDocs/",
+        url: "http://10.141.221.75/getDocIdList/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         error: function (xhr, status, errorThrown) {
@@ -16,53 +18,47 @@ $(document).ready(function () {
             console.log(xhr)
         },
         success: function(d){
-            unfinishedDocs = d["unfinished_doc_list"];
-            // let doc_index = Math.floor(Math.random() * unfinishedDocs.length);
-            // let data = {"doc_id": doc_index};
-            currentDocId = doc_index;
-            getDocById(doc_index);
+            totalDocIds = d["doc_id_list"];
+            currentDocIndex = doc_index;
+            getDocById(totalDocIds[currentDocIndex]);
         }
     });
 
 });
 
 function docNext(){
-    if(currentDocId < unfinishedDocs[unfinishedDocs.length - 1]){
+    if(currentDocIndex < totalDocIds.length - 1){
         cleanDocContent();
         cleanRadioBtns();
-        let temp = currentDocId + 1;
-        while(temp < unfinishedDocs[unfinishedDocs.length - 1] && $.inArray(temp, unfinishedDocs) === -1){
-            temp += 1;
-        }
-        currentDocId = temp;
-        getDocById(currentDocId);
+        currentDocIndex = currentDocIndex + 1;
+        getDocById(totalDocIds[currentDocIndex]);
+        radioBtnDisplay(currentDocIndex, currentSentenceIndex);
+        titleDisplay(currentDocIndex, currentSentenceIndex);
     }
 
-    if(currentDocId === unfinishedDocs[unfinishedDocs.length - 1]){
+    if(currentDocIndex === totalDocIds.length - 1){
         $("#doc-next").attr("disabled", "true");
     }
-    if(currentDocId !== 1){
+    if(currentDocIndex !== 0){
         $("#doc-previous").removeAttr("disabled");
     }
 
 }
 
 function docPre(){
-    if(currentDocId > 1){
+    if(currentDocIndex > 0){
         cleanDocContent();
         cleanRadioBtns();
-        let temp = currentDocId - 1;
-        while(temp > 1 && $.inArray(temp, unfinishedDocs) === -1){
-            temp -= 1;
-        }
-        currentDocId = temp;
-        getDocById(currentDocId);
+        currentDocIndex = currentDocIndex - 1;
+        getDocById(totalDocIds[currentDocIndex]);
+        radioBtnDisplay(currentDocIndex, currentSentenceIndex);
+        titleDisplay(currentDocIndex, currentSentenceIndex);
     }
 
-    if(currentDocId === 1){
+    if(currentDocIndex === 0){
         $("#doc-previous").attr("disabled", "true");
     }
-    if(currentDocId !== unfinishedDocs[unfinishedDocs.length - 1]){
+    if(currentDocIndex !== totalDocIds.length - 1){
         $("#doc-next").removeAttr("disabled");
     }
 
@@ -75,7 +71,9 @@ function sentenceNext(){
         $(".sentence-panel-scroll").html(docText[currentSentenceIndex]);
         $("#next-sentence").removeAttr("disabled");
         cleanRadioBtns();
-        getAnnotationType(currentDocId, currentSentenceIndex);
+        getAnnotationCount(totalDocIds[currentDocIndex], currentSentenceIndex);
+        radioBtnDisplay(currentDocIndex, currentSentenceIndex);
+        titleDisplay(currentDocIndex, currentSentenceIndex);
     }
     if(currentSentenceIndex === length - 1){
         $("#next-sentence").attr("disabled", "true");
@@ -92,7 +90,9 @@ function sentencePrevious(){
         $(".sentence-panel-scroll").html(docText[currentSentenceIndex]);
         $("#pre-sentence").removeAttr("disabled");
         cleanRadioBtns();
-        getAnnotationType(currentDocId, currentSentenceIndex);
+        getAnnotationCount(totalDocIds[currentDocIndex], currentSentenceIndex);
+        radioBtnDisplay(currentDocIndex, currentSentenceIndex);
+        titleDisplay(currentDocIndex, currentSentenceIndex);
     }
     if(currentSentenceIndex === 0){
         $("#pre-sentence").attr("disabled", "true");
@@ -102,11 +102,11 @@ function sentencePrevious(){
     }
 }
 
-function getAnnotationType(doc_id, sentence_index){
+function getAnnotationCount(doc_id, sentence_index){
     let sentenceData = {"doc_id": doc_id, "sentence_id": sentence_index};
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/getAnnotationByIndex/",
+        url: "http://10.141.221.75/getAnnotationCountByIndex/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(sentenceData),
@@ -116,16 +116,18 @@ function getAnnotationType(doc_id, sentence_index){
             console.log(xhr)
         },
         success: function(d){
-            let annotationType = d["annotation_type"];
-            if (annotationType !== -1){
-                let radioName = "#optionsRadios" + annotationType;
-                $(radioName).prop("checked", true);
+            let annotationCount = d["annotation_count"];
+            // console.log(annotationCount);
+            if (annotationCount === -1){
+                annotationCount = 0;
+                // console.log(annotationCount);
             }
+            $("#annotation-count").html(annotationCount);
         }
     });
 }
 
-function  getDocById(doc_id){
+function getDocById(doc_id){
     let data = {"doc_id": doc_id};
     $.ajax({
         async: true,
@@ -153,7 +155,21 @@ function  getDocById(doc_id){
                 }
                 $(".sentence-panel-scroll").html(d[0].text);
                 currentSentenceIndex = 0;
-                getAnnotationType(d[0].doc_id, d[0].sentence_index)
+                currentDocIndex = $.inArray(doc_id, totalDocIds);
+                getAnnotationCount(d[0].doc_id, d[0].sentence_index);
+                titleDisplay(currentDocIndex, currentSentenceIndex);
+                if(currentDocIndex !== length - 1){
+                    $("#next-sentence").removeAttr("disabled");
+                }
+                if(currentDocIndex !== 0){
+                    $("#doc-previous").removeAttr("disabled");
+                }
+                if(currentSentenceIndex !== length - 1){
+                    $("#next-sentence").removeAttr("disabled");
+                }
+                if(currentSentenceIndex !== 0){
+                    $("#pre-sentence").removeAttr("disabled");
+                }
             }
         }
     });
@@ -175,7 +191,7 @@ $(function(){
         // console.log($(this).val());
         let index = $(this).val().split("-")[1];
         console.log(index);
-        let key = currentDocId + "-" + currentSentenceIndex;
+        let key = totalDocIds[currentDocIndex] + "-" + currentSentenceIndex;
         typeMap.set(key, index);
 
         console.log(typeMap);
@@ -213,7 +229,7 @@ function transformTypeDataToJson(){
         let text = docText[sentenceId];
         let type = value;
         console.log("docId: " + docId + ", sentenceId: " + sentenceId + ", text: " + text + ", type: " + type);
-        let temp = {"doc_id": docId, "sentence_index": sentenceId, "text": text, "type": type};
+        let temp = {"doc_id": docId, "sentence_index": sentenceId, "text": text, "type": type, "username": username};
         data.push(temp);
     });
     return data;
@@ -238,4 +254,30 @@ function saveTypeData(){
             }
         }
     });
+}
+
+function radioBtnDisplay(currentDocIndex, currentSentenceIndex){
+    let key = totalDocIds[currentDocIndex] + "-" + currentSentenceIndex;
+    if(typeMap.has(key)){
+        let value = typeMap.get(key);
+        let radioName = "#optionsRadios" + value;
+        $(radioName).prop("checked", true);
+    }
+}
+
+function titleDisplay(currentDocIndex, currentSentenceIndex){
+    $("#doc-id").html(totalDocIds[currentDocIndex]);
+    $("#sentence-id").html(currentSentenceIndex);
+}
+
+function jumpClick(){
+    cleanDocContent();
+    cleanRadioBtns();
+    let doc_id = $("input[class='form-control']").val();
+    let idoc_id = parseInt(doc_id);
+    if(!isNaN(idoc_id)){
+        getDocById(idoc_id);
+    }else {
+        alert(doc_id + " is not a number");
+    }
 }
