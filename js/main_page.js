@@ -144,6 +144,7 @@ function getDocById(doc_id){
             console.log(d);
             console.log(d.length);
             if(d.length > 0){
+                docText = [];
                 for(let i = 0; i < d.length; i++){
                     let data = {
                         "sentenceId": "sentence-" + d[i].sentence_index,
