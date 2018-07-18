@@ -9,7 +9,7 @@ $(document).ready(function () {
     let doc_index = 0;
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/getDocIdList/",
+        url: "http://bigcode.fudan.edu.cn/kg/getDocIdList/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         error: function (xhr, status, errorThrown) {
@@ -106,7 +106,7 @@ function getAnnotationCount(doc_id, sentence_index){
     let sentenceData = {"doc_id": doc_id, "sentence_id": sentence_index};
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/getAnnotationCountByIndex/",
+        url: "http://bigcode.fudan.edu.cn/kg/getAnnotationCountByIndex/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(sentenceData),
@@ -131,7 +131,7 @@ function getDocById(doc_id){
     let data = {"doc_id": doc_id};
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/getDocById/",
+        url: "http://bigcode.fudan.edu.cn/kg/getDocById/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data),
@@ -240,7 +240,7 @@ function saveTypeData(){
     let data = transformTypeDataToJson();
     $.ajax({
         async: true,
-        url: "http://10.141.221.75/saveSentenceAnnotation/",
+        url: "http://bigcode.fudan.edu.cn/kg/saveSentenceAnnotation/",
         type: "post",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(data),
