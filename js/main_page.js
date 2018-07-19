@@ -227,10 +227,10 @@ function transformTypeDataToJson(){
         let docSentenceIdArray = key.split("-");
         let docId = docSentenceIdArray[0];
         let sentenceId = docSentenceIdArray[1];
-        let text = docText[sentenceId];
+        // let text = docText[sentenceId];
         let type = value;
-        console.log("docId: " + docId + ", sentenceId: " + sentenceId + ", text: " + text + ", type: " + type);
-        let temp = {"doc_id": docId, "sentence_index": sentenceId, "text": text, "type": type, "username": username};
+        console.log("docId: " + docId + ", sentenceId: " + sentenceId + ", type: " + type);
+        let temp = {"doc_id": docId, "sentence_index": sentenceId, "type": type, "username": username};
         data.push(temp);
     });
     return data;
